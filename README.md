@@ -1,4 +1,4 @@
-content = """# FruitPulse AI - Tugas WGTIK
+content = """# FruitPulse AI - Tugas WGTIK"""
 
 FruitPulse AI adalah antarmuka *dashboard* cerdas berbasis web yang dirancang untuk melakukan **klasifikasi dan deteksi objek (kualitas buah)** secara *real-time*. 
 Aplikasi ini memanfaatkan model *Machine Learning* yang dilatih menggunakan Teachable Machine dan dijalankan langsung di *browser* menggunakan **TensorFlow.js**.
