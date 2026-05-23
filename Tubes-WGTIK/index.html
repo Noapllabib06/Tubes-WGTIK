@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI OBJECT SCANNER - GAME MODE</title>
+    <style>
+        /* Tema Game & Neon Cyberpunk */
+        :root {
+            --bg-game: #0b0f19;
+            --panel-bg: #1e2640;
+            --neon-cyan: #00f2fe;
+            --neon-purple: #9b51e0;
+            --neon-green: #39ff14;
+            --text-light: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace, sans-serif;
+            background-color: var(--bg-game);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Container Utama Game */
+        .game-container {
+            background: rgba(30, 38, 64, 0.8);
+            border: 3px solid var(--neon-cyan);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.3), inset 0 0 15px rgba(0, 242, 254, 0.1);
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .game-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .game-subtitle {
+            font-size: 0.85em;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        /* Kotak Tebak Gambar / Live Badge */
+        .badge-scanner {
+            background: #0f172a;
+            border: 2px dashed var(--neon-purple);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(155, 81, 224, 0.2);
+        }
+
+        .badge-scanner .title {
+            font-size: 0.75em;
+            color: var(--neon-purple);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .badge-scanner .result {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--neon-green);
+            text-shadow: 0 0 8px rgba(57, 255, 20, 0.6);
+            text-transform: uppercase;
+        }
+
+        /* Tombol Arcade */
+        .btn-arcade {
+            background: linear-gradient(135deg, var(--neon-purple), #6366f1);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(155, 81, 224, 0.4);
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-bottom: 25px;
+            border-bottom: 4px solid #4338ca;
+        }
+
+        .btn-arcade:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(155, 81, 224, 0.6);
+            filter: brightness(1.1);
+        }
+
+        .btn-arcade:active {
+            transform: translateY(2px);
+            border-bottom: 0px solid transparent;
+        }
+
+        /* Bingkai Kamera ala Radar/HUD */
+        .camera-wrapper {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 25px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid #334155;
+            background: #020617;
+            box-shadow: 0 0 20px rgba(0,0,0,0.7);
+        }
+
+        #webcam-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+        }
+
+        /* Efek Animasi Laser Scanning */
+        .laser-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, transparent, var(--neon-cyan), transparent);
+            box-shadow: 0 0 12px var(--neon-cyan), 0 0 4px var(--neon-cyan);
+            animation: scanning 2.5s linear infinite;
+            z-index: 10;
+            pointer-events: none;
+            display: none; /* Muncul setelah kamera aktif */
+        }
+
+        @keyframes scanning {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        /* Placeholder teks di kamera */
+        #placeholder-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #475569;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Panel Status Energi / Progress Bar Game */
+        .analysis-panel {
+            text-align: left;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .stat-row {
+            margin-bottom: 12px;
+        }
+
+        .stat-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            color: #cbd5e1;
+        }
+
+        .mana-bar-bg {
+            background: #0f172a;
+            border: 1px solid #475569;
+            height: 14px;
+            border-radius: 4px;
+            overflow: hidden;
+            padding: 2px;
+        }
+
+        .mana-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #06b6d4, #3b82f6);
+            border-radius: 2px;
+            box-shadow: 0 0 8px rgba(6, 182, 212, 0.7);
+            transition: width 0.1s ease-out;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div class="game-title">AI Scanner Pro</div>
+        <div class="game-subtitle">Tugas WGTIK - Target Analyzer</div>
+        
+        <div class="badge-scanner">
+            <div class="title">Sistem Mendeteksi :</div>
+            <div id="top-guess-badge" class="result">SIAP MEMINDAI...</div>
+        </div>
+
+        <button type="button" class="btn-arcade" id="start-btn" onclick="init()">Nyalakan Sensor</button>
+        
+        <div class="camera-wrapper">
+            <div class="laser-line" id="laser"></div>
+            <div id="webcam-container">
+                <span id="placeholder-text">Sensor Offline</span>
+            </div>
+        </div>
+        
+        <div class="analysis-panel" id="label-container">
+            <div style="text-align: center; color: #64748b; font-size: 0.85em;">Nyalakan sensor untuk melihat grafik kecocokan.</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    
+    <script type="text/javascript">
+        const URL = "./my_model/";
+        let model, webcam, labelContainer, maxPredictions;
+        let isPlaying = false;
+
+        async function init() {
+            if(isPlaying) return; 
+            
+            const btn = document.getElementById("start-btn");
+            btn.innerText = "BOOTING SYSTEM...";
+            btn.style.opacity = "0.6";
+            btn.style.cursor = "not-allowed";
+
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            const flip = true; 
+            webcam = new tmImage.Webcam(300, 300, flip); 
+            await webcam.setup(); 
+            await webcam.play();
+            window.requestAnimationFrame(loop); 
+
+            // Aktifkan Laser Scanner dan Hapus Placeholder
+            document.getElementById("placeholder-text").style.display = "none";
+            document.getElementById("laser").style.display = "block";
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+            
+            // Generate HUD Progress Bar
+            labelContainer = document.getElementById("label-container");
+            labelContainer.innerHTML = ""; 
+            
+            for (let i = 0; i < maxPredictions; i++) { 
+                let div = document.createElement("div");
+                div.className = "stat-row";
+                
+                div.innerHTML = `
+                    <div class="stat-info">
+                        <span id="class-name-${i}">Class</span>
+                        <span id="class-percent-${i}">0%</span>
+                    </div>
+                    <div class="mana-bar-bg">
+                        <div class="mana-bar-fill" id="class-bar-${i}"></div>
+                    </div>
+                `;
+                labelContainer.appendChild(div);
+            }
+
+            isPlaying = true;
+            btn.innerText = "SENSOR ONLINE";
+            btn.style.background = "linear-gradient(135deg, #059669, #10b981)";
+            btn.style.borderBottom = "4px solid #047857";
+            btn.style.opacity = "1";
+        }
+
+        async function loop() {
+            webcam.update(); 
+            await predict(); 
+            window.requestAnimationFrame(loop); 
+        }
+
+        async function predict() {
+            const prediction = await model.predict(webcam.canvas);
+            
+            let highestProb = -1;
+            let highestClassName = "";
+
+            for (let i = 0; i < maxPredictions; i++) {
+                const percentVal = Math.round(prediction[i].probability * 100);
+                
+                // Update text & bar di panel bawah
+                document.getElementById(`class-name-${i}`).innerText = prediction[i].className;
+                document.getElementById(`class-percent-${i}`).innerText = percentVal + "%";
+                document.getElementById(`class-bar-${i}`).style.width = percentVal + "%";
+
+                // Logika mencari tebakan tertinggi/terkuat
+                if (prediction[i].probability > highestProb) {
+                    highestProb = prediction[i].probability;
+                    highestClassName = prediction[i].className;
+                }
+            }
+
+            // Update Kotak Tebak Gambar utama di atas
+            const badge = document.getElementById("top-guess-badge");
+            if (highestProb > 0.4) { // Hanya tampilkan jika akurasi di atas 40%
+                badge.innerText = `${highestClassName} (${Math.round(highestProb * 100)}%)`;
+                badge.style.color = "var(--neon-green)";
+            } else {
+                badge.innerText = "MENCARI OBJEK...";
+                badge.style.color = "var(--neon-cyan)";
+            }
+        }
+    </script>
+
+</body>
+</html>
