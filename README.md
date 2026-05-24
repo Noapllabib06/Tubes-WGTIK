@@ -111,7 +111,12 @@ Pastikan kamu sudah memiliki model TensorFlow.js dari Teachable Machine. Jika be
 ```
 
 ## 👨‍💻 Pengembang
-* **Naufal Labib Asyidiq** - Informatics / Backend & System Developer
+* **Naufal Labib Asyidiq** - Informatics
+* **Ikfina Kamalia Rahmah - Informatics
+* **Amelia Candradewi - Informatics
+* **Nabila Zain - Informatics
+* **Syifa Kirana Putri Surya - Informatics
+* **Hafis Akbar Anugrah - Informatics
 
 <br>
 <div align="center">
