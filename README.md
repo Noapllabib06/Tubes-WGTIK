@@ -116,6 +116,7 @@ Pastikan kamu sudah memiliki model TensorFlow.js dari Teachable Machine. Jika be
 * Amelia Candradewi - Informatics
 * Nabila Zain - Informatics
 * Syifa Kirana Putri Surya - Informatics
+* Estetika Ananda Poetri Hariyanto - Informatics
 * Hafis Akbar Anugrah - Informatics
 
 <br>
