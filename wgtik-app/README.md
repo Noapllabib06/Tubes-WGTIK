@@ -4,7 +4,7 @@ Tubes WGTIK adalah aplikasi berbasis web yang dikembangkan sebagai **Tugas Besar
 
 Cara Menjalankan Project Tubes WGTIK (Untuk Laptop Baru)
 
---- TAHAP 1: PERSIAPAN APLIKASI WAJIB ---
+--- TAHAP 1: PERSIAPAN APLIKASI (OPSIONAL), nanti aja klo udah mau gedein ---
 Pastikan Anda mendownload dan menginstall 3 aplikasi ini terlebih dahulu secara berurutan:
 1. XAMPP (Dibutuhkan untuk membaca bahasa PHP).
 2. Git (Dibutuhkan untuk menjalankan perintah 'git clone').
