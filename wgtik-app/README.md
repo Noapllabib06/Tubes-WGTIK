@@ -37,134 +37,27 @@ Fitur yang tersedia:
 - Mengelola [Entitas master, misal: data barang/jadwal]
 - Melihat laporan sistem
 
----
+Cara Menjalankan Project Tubes WGTIK (Untuk Laptop Baru)
 
-### 2️⃣ Pengguna / User
-Pengguna umum yang berinteraksi langsung dengan layanan utama aplikasi.
+--- TAHAP 1: PERSIAPAN APLIKASI WAJIB ---
+Pastikan Anda mendownload dan menginstall 3 aplikasi ini terlebih dahulu secara berurutan:
+1. XAMPP (Dibutuhkan untuk membaca bahasa PHP).
+2. Git (Dibutuhkan untuk menjalankan perintah 'git clone').
+3. Composer (Dibutuhkan untuk menginstall file Laravel. Saat instalasi Composer, pastikan diarahkan ke file php.exe di dalam folder XAMPP).
 
-Fitur yang tersedia:
-- Registrasi dan login
-- [Fitur utama user 1]
-- [Fitur utama user 2]
+--- TAHAP 2: MENJALANKAN PROJECT ---
+Jika ketiga aplikasi di atas sudah terinstall, buka Terminal atau Command Prompt (CMD) dan jalankan perintah berikut:
 
----
-
-## ⚙️ Fitur Utama
-
-### 🔐 Manajemen Akun
-- Registrasi
-- Login
-- Logout
-- Manajemen profil
-
----
-
-### 📂 Manajemen Data Inti
-- [Nama modul, misal: CRUD Data Transaksi]
-- Pencarian data spesifik
-- Filter dan validasi form
-
----
-
-## 💻 Arsitektur & Teknologi yang Digunakan
-
-### Backend & Frontend
-- Laravel (v.10+ / Sesuaikan versi)
-- Blade Template Engine
-- [Bootstrap / Tailwind CSS] *(Pilih salah satu)*
-
-### Database
-- MySQL
-
----
-
-## 🔒 Batasan Sistem
-
-- [Sebutkan batasan sistem, misal: Hanya mendukung pengunggahan file maksimal 2MB]
-- [Sebutkan batasan lain, misal: Aplikasi saat ini belum mendukung integrasi payment gateway]
-
----
-
-## 🚀 Cara Menjalankan Project
-
-Sebelum menjalankan project ini, pastikan beberapa software berikut sudah terinstall di laptop/komputer Anda:
-
-- **PHP** (minimal versi yang disyaratkan Laravel)
-- **Composer**
-- **Git**
-- **XAMPP / Laragon** (untuk menjalankan MySQL database)
-
-Cek instalasi dengan perintah berikut di terminal:
-
-php -v
-composer -v
-git -v
-
-### 1️⃣ Clone Repository
+1. Clone repo & masuk ke folder:
 git clone https://github.com/Noapllabib06/Tubes-WGTIK.git
-
-### 2️⃣ Masuk Folder Project
 cd Tubes-WGTIK
 
-### 3️⃣ Install Dependencies
+2. Install dependensi Laravel:
 composer install
 
-### 4️⃣ Copy File Environment
-cp .env.example .env
-
-### 5️⃣ Generate App Key
-php artisan key:generate
-
-### 6️⃣ Konfigurasi Database
-
-Edit file **.env** menggunakan text editor, lalu sesuaikan konfigurasi database:
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=db_wgtik
-DB_USERNAME=root
-DB_PASSWORD=
-
-*(Pastikan Anda telah membuat database kosong bernama db_wgtik di phpMyAdmin sebelum lanjut ke langkah berikutnya)*
-
-### 7️⃣ Jalankan Migration
-php artisan migrate
-
-### 8️⃣ Menjalankan Server
+3. Jalankan server:
 php artisan serve
 
-Aplikasi akan berjalan di:
-
-http://127.0.0.1:8000
-
----
-
-## 📂 Struktur Project
-
-Project ini menggunakan struktur standar **Laravel MVC**:
-
-- **app/Models** → Model database
-- **app/Http/Controllers** → Controller logic
-- **resources/views** → Blade template (UI)
-- **routes/web.php** → Routing web
-
----
-
-## 👨‍💻 Tim Pengembang
-
-- **Naufal Labib Asyidiq** - *[Peran Anda, misal: Backend Developer]* • [Noapllabib06](https://github.com/Noapllabib06)
-- **Arkaan** - *[Peran Arkaan, misal: Frontend Developer]*
-- **Wahyu** - *[Peran Wahyu, misal: UI/UX & Project Manager]*
-
-**Dosen Pengampu:** Pak Dimas
-
-#
-
-<div align="center">
-  
-**Program Studi S1 Teknik Informatika** · **Telkom University Purwokerto**
-
-<img src="https://img.shields.io/badge/Telkom_University_Purwokerto-8B0000?style=for-the-badge&logo=laravel&logoColor=white" />
+Buka browser dan akses: http://127.0.0.1:8000
 
 </div>
