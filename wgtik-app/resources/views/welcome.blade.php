@@ -3,6 +3,8 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    
     <title>FruitPulse AI - Precision Sorting Dashboard</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -148,15 +150,15 @@
             <p class="font-label-caps text-label-caps text-on-surface-variant">Precision Grading</p>
         </div>
         <nav class="flex-grow space-y-base">
-            <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-all duration-200" href="#">
+            <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-all duration-200 cursor-pointer" onclick="switchView('dashboard')">
                 <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
                 <span class="font-label-caps text-label-caps">Dashboard</span>
             </a>
-            <a class="flex items-center gap-4 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg transition-transform duration-150 active:scale-95" href="#">
+            <a class="flex items-center gap-4 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg transition-transform duration-150 active:scale-95 cursor-pointer" onclick="switchView('dashboard')">
                 <span class="material-symbols-outlined" data-icon="videocam">videocam</span>
                 <span class="font-label-caps text-label-caps">Live Scan</span>
             </a>
-            <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-all duration-200" href="#">
+            <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-all duration-200 cursor-pointer" onclick="switchView('history')">
                 <span class="material-symbols-outlined" data-icon="history">history</span>
                 <span class="font-label-caps text-label-caps">History</span>
             </a>
@@ -185,7 +187,7 @@
                     <span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">FruitPulse</span>
                 </div>
                 <div class="hidden md:block">
-                    <h2 class="font-title-md text-title-md text-on-surface">System Overview</h2>
+                    <h2 id="header-title" class="font-title-md text-title-md text-on-surface">System Overview</h2>
                 </div>
                 <div class="flex items-center gap-stack-md">
                     <button id="start-scan-btn" onclick="toggleScanner()" class="bg-primary text-white px-4 py-2 rounded-lg font-label-caps text-label-caps hover:bg-on-primary-container transition-colors shadow flex items-center gap-2">
@@ -199,8 +201,7 @@
             </div>
         </header>
 
-        <div class="max-w-[1280px] mx-auto p-container-margin space-y-stack-lg">
-            
+        <div id="dashboard-section" class="max-w-[1280px] mx-auto p-container-margin space-y-stack-lg">
             <section class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
                 <div class="bg-surface-container-lowest p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border border-surface-container">
                     <p class="font-label-caps text-label-caps text-on-surface-variant mb-base uppercase">Rata-rata Akurasi</p>
@@ -230,7 +231,6 @@
             </section>
 
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-                
                 <div class="lg:col-span-8 bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] overflow-hidden relative border border-surface-container aspect-video lg:aspect-auto min-h-[400px]">
                     <div id="webcam-container">
                         <div id="placeholder-feed" class="w-full h-full flex flex-col items-center justify-center text-on-surface-variant bg-surface-container-highest z-0">
@@ -238,7 +238,6 @@
                             <span class="font-title-md">Sensor Offline</span>
                             <span class="font-body-sm mt-2">Click "START SYSTEM" to begin scanning</span>
                         </div>
-                        
                         <img id="uploaded-image-preview" class="hidden z-0" src="" alt="Uploaded Scan">
                     </div>
 
@@ -300,7 +299,7 @@
                         </div>
                     </div>
                     
-                    <button class="mt-auto w-full bg-surface-container-highest text-on-surface-variant font-title-md text-title-md py-4 px-4 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed" id="log-btn">
+                    <button onclick="saveScanData()" class="mt-auto w-full bg-surface-container-highest text-on-surface-variant font-title-md text-title-md py-4 px-4 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed" id="log-btn">
                         <span class="material-symbols-outlined" data-icon="send">send</span>
                         <span class="font-bold">Log Scan Details</span>
                     </button>
@@ -320,32 +319,35 @@
                     </label>
                 </div>
             </section>
+        </div>
 
-            <section class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border border-surface-container overflow-hidden">
-                <div class="px-card-padding py-stack-md border-b border-outline-variant flex justify-between items-center">
-                    <h3 class="font-title-md text-title-md text-on-surface">Recent Activity</h3>
-                    <button class="text-primary font-label-caps text-label-caps hover:underline">View All</button>
+        <div id="history-section" style="display: none;" class="max-w-[1280px] mx-auto p-container-margin space-y-stack-lg">
+            <div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border border-surface-container p-card-padding">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-title-md text-title-md text-on-surface font-bold">Riwayat Klasifikasi Penuh</h3>
+                    <button onclick="loadHistoryData()" class="text-primary flex items-center gap-1 hover:underline font-label-caps text-label-caps">
+                        <span class="material-symbols-outlined text-[16px]">refresh</span> Refresh
+                    </button>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                
+                <div class="overflow-x-auto border border-outline-variant rounded-lg">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
                         <thead>
-                            <tr class="bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps">
-                                <th class="p-4 border-b border-outline-variant">Waktu</th>
+                            <tr class="bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps uppercase">
+                                <th class="p-4 border-b border-outline-variant">Waktu Deteksi</th>
                                 <th class="p-4 border-b border-outline-variant">Jenis Buah</th>
-                                <th class="p-4 border-b border-outline-variant">Kondisi</th>
-                                <th class="p-4 border-b border-outline-variant">Akurasi</th>
+                                <th class="p-4 border-b border-outline-variant">Status Kematangan</th>
+                                <th class="p-4 border-b border-outline-variant">Akurasi (Confidence)</th>
                             </tr>
                         </thead>
-                        <tbody id="activity-table-body">
-                            <tr class="hover:bg-surface-container-highest transition-colors">
-                                <td class="p-4 border-b border-outline-variant text-body-sm text-on-surface-variant" colspan="4" text-center>
-                                    Belum ada data pindaian hari ini.
-                                </td>
+                        <tbody id="history-tbody">
+                            <tr>
+                                <td colspan="4" class="p-4 text-center text-body-sm text-on-surface-variant">Memuat data...</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </div>
         </div>
     </main>
 
@@ -356,6 +358,102 @@
         const URL = "{{ asset('my_model') }}/";
         let model, webcam, maxPredictions;
         let isScanning = false;
+        
+        // Variabel global untuk menyimpan data sementara sebelum dikirim ke Database
+        let currentScanData = null;
+
+        // FUNGSI GANTI HALAMAN (SPA - Single Page Application Style)
+        function switchView(viewName) {
+            const dashboard = document.getElementById('dashboard-section');
+            const history = document.getElementById('history-section');
+            const headerTitle = document.getElementById('header-title');
+
+            if (viewName === 'dashboard') {
+                dashboard.style.display = 'block';
+                history.style.display = 'none';
+                headerTitle.innerText = "System Overview";
+            } else if (viewName === 'history') {
+                dashboard.style.display = 'none';
+                history.style.display = 'block';
+                headerTitle.innerText = "Scan History";
+                loadHistoryData(); // Ambil data saat halaman history dibuka
+            }
+        }
+
+        // FUNGSI LOAD DATA DARI DATABASE (Route Laravel)
+        async function loadHistoryData() {
+            const tbody = document.getElementById('history-tbody');
+            tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center">Memuat data...</td></tr>';
+
+            try {
+                // Pastikan route '/api/history' (Metode GET) ini sudah kamu buat di web.php
+                const response = await fetch('/api/history');
+                if(!response.ok) throw new Error("Gagal mengambil data");
+                
+                const data = await response.json();
+                tbody.innerHTML = ''; 
+                
+                if(data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-on-surface-variant">Belum ada riwayat deteksi.</td></tr>';
+                    return;
+                }
+
+                data.forEach(item => {
+                    let date = new Date(item.created_at).toLocaleString('id-ID');
+                    let row = `
+                    <tr class="hover:bg-surface-container-highest transition-colors">
+                        <td class="p-4 border-b border-outline-variant text-body-sm text-on-surface">${date}</td>
+                        <td class="p-4 border-b border-outline-variant text-body-sm text-on-surface font-semibold">${item.fruit_type}</td>
+                        <td class="p-4 border-b border-outline-variant text-body-sm text-on-surface">${item.ripeness_status}</td>
+                        <td class="p-4 border-b border-outline-variant text-body-sm text-on-surface">${item.confidence_score}%</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error('Error fetching history:', error);
+                tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-error">Terjadi kesalahan. Pastikan database/tabel sudah dibuat.</td></tr>';
+            }
+        }
+
+        // FUNGSI SIMPAN DATA KE DATABASE (Lewat Tombol Log Scan)
+        async function saveScanData() {
+            if(!currentScanData) return;
+
+            const btn = document.getElementById("log-btn");
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<span class="material-symbols-outlined animate-spin" data-icon="refresh">refresh</span> Menyimpan...`;
+            btn.classList.add("cursor-wait", "opacity-70");
+
+            try {
+                // Mengambil CSRF token untuk keamanan form submission Laravel
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                // Memanggil route '/api/history' (Metode POST) untuk menyimpan ke DB
+                const response = await fetch('/api/history', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify(currentScanData)
+                });
+
+                if(response.ok) {
+                    alert("Data berhasil disimpan ke riwayat!");
+                    // Reset tombol agar user tahu berhasil
+                    btn.innerHTML = `<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span> Berhasil Disimpan`;
+                    setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+                } else {
+                    throw new Error("Gagal menyimpan data");
+                }
+            } catch (error) {
+                console.error("Gagal menyimpan:", error);
+                alert("Gagal menyimpan data ke database. Cek console browser.");
+                btn.innerHTML = originalText;
+            } finally {
+                btn.classList.remove("cursor-wait", "opacity-70");
+            }
+        }
 
         async function loadModelIfNotLoaded() {
             if (!model) {
@@ -370,18 +468,12 @@
             const btn = document.getElementById("start-scan-btn");
 
             if (isScanning) {
-                // STOP SCANNING
-                isScanning = false; // Matikan bendera secepatnya agar loop AI berhenti
-                
-                if (webcam) {
-                    webcam.stop();
-                }
+                isScanning = false; 
+                if (webcam) webcam.stop();
 
                 const container = document.getElementById("webcam-container");
                 const canvas = container.querySelector("canvas");
-                if (canvas) {
-                    container.removeChild(canvas);
-                }
+                if (canvas) container.removeChild(canvas);
 
                 document.getElementById("placeholder-feed").style.display = "flex";
                 document.getElementById("uploaded-image-preview").classList.add("hidden");
@@ -394,8 +486,11 @@
                 document.getElementById("status-text").innerText = "SYSTEM OFFLINE";
                 document.getElementById("status-text").classList.replace("text-primary", "text-gray-500");
 
+                // Reset tombol save log
+                document.getElementById("log-btn").className = "mt-auto w-full bg-surface-container-highest text-on-surface-variant font-title-md text-title-md py-4 px-4 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed";
+                currentScanData = null;
+
             } else {
-                // START SCANNING
                 btn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">refresh</span> INITIALIZING...`;
                 btn.classList.add("opacity-70", "cursor-wait");
 
@@ -411,7 +506,6 @@
 
                 document.getElementById("placeholder-feed").style.display = "none";
                 document.getElementById("uploaded-image-preview").classList.add("hidden");
-                
                 document.getElementById("webcam-container").appendChild(webcam.canvas);
                 
                 btn.innerHTML = `<span class="material-symbols-outlined text-[18px]">stop_circle</span> STOP SCANNING`;
@@ -425,25 +519,19 @@
         }
 
         async function loop() {
-            // Cegah loop berjalan jika tombol stop ditekan
             if (!isScanning) return; 
-            
             try {
                 webcam.update(); 
                 const prediction = await model.predict(webcam.canvas);
-                
-                // BUG FIX UTAMA: Pengecekan ganda setelah AI selesai memprediksi!
-                // Jika selama AI berpikir user keburu mengklik "Upload", hentikan proses penulisan ke UI
                 if (!isScanning) return; 
                 
                 processPredictionData(prediction);
                 window.requestAnimationFrame(loop); 
             } catch (error) {
-                console.warn("Loop interrupted: Kamera dihentikan secara tiba-tiba.");
+                console.warn("Loop interrupted.");
             }
         }
 
-        // FUNGSI UPLOAD GAMBAR
         async function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -454,10 +542,7 @@
             uploadLabel.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">refresh</span> MEMPROSES...`;
             uploadLabel.classList.add("opacity-70", "cursor-wait");
 
-            // Matikan Live Scan secara paksa (await memastikan kamera benar-benar mati dulu)
-            if (isScanning) {
-                await toggleScanner(); 
-            }
+            if (isScanning) await toggleScanner(); 
 
             await loadModelIfNotLoaded();
 
@@ -466,8 +551,6 @@
 
             img.onload = async function() {
                 const prediction = await model.predict(img);
-                
-                // Jangan perbarui UI jika secara ajaib isScanning menyala lagi
                 if (isScanning) return;
 
                 processPredictionData(prediction);
@@ -478,25 +561,20 @@
 
                 uploadLabel.innerHTML = originalHtml;
                 uploadLabel.classList.remove("opacity-70", "cursor-wait");
-
-                // BUG FIX KEDUA: Bersihkan memori input file agar kamu bisa upload foto yang sama berulang kali
                 event.target.value = '';
             }
 
             reader.onload = function(e) {
                 img.src = e.target.result;
-                
                 const previewImg = document.getElementById("uploaded-image-preview");
                 previewImg.src = e.target.result;
                 previewImg.classList.remove("hidden");
-                
                 document.getElementById("placeholder-feed").style.display = "none";
             }
 
             reader.readAsDataURL(file);
         }
 
-        // FUNGSI TERPUSAT UNTUK UPDATE UI DASHBOARD
         function processPredictionData(prediction) {
             let highestProb = -1;
             let highestClassName = "";
@@ -515,7 +593,9 @@
             document.getElementById("center-icon").classList.replace("text-gray-400", "text-primary");
             document.getElementById("conf-ring").classList.replace("text-gray-300", "text-primary");
             document.getElementById("main-conf").classList.replace("text-gray-400", "text-primary");
-            document.getElementById("log-btn").className = "mt-auto w-full bg-primary text-white font-title-md text-title-md py-4 px-4 rounded-lg flex items-center justify-center gap-2 cursor-pointer hover:bg-on-primary-fixed-variant";
+            
+            // Mengaktifkan Tombol Simpan
+            document.getElementById("log-btn").className = "mt-auto w-full bg-primary text-white font-title-md text-title-md py-4 px-4 rounded-lg flex items-center justify-center gap-2 cursor-pointer hover:bg-on-primary-fixed-variant transition-colors shadow-lg";
 
             const confRing = document.getElementById("conf-ring");
             const circumference = 251.2;
@@ -533,32 +613,45 @@
                 document.getElementById("overlay-detected").innerText = highestClassName.toUpperCase();
                 
                 let words = highestClassName.split(" ");
+                let buahType = highestClassName;
+                let kondisinya = "Terdeteksi";
+
                 if(words.length > 1) {
-                    let kondisi = words[0]; // Misal: Fresh, Rotten, Unripe
-                    let namaBuah = words.slice(1).join(" "); // Misal: Apple, Banana
+                    kondisinya = words[0]; 
+                    buahType = words.slice(1).join(" "); 
                     
-                    document.getElementById("detail-status").innerText = kondisi;
-                    document.getElementById("detail-type").innerText = namaBuah;
+                    document.getElementById("detail-status").innerText = kondisinya;
+                    document.getElementById("detail-type").innerText = buahType;
                     
-                    // Logika Pewarnaan Berdasarkan Kondisi
                     let statusElement = document.getElementById("detail-status");
-                    if(kondisi.toLowerCase() === "rotten") {
-                        statusElement.className = "text-title-md font-title-md font-bold text-error"; // Merah
-                    } else if(kondisi.toLowerCase() === "fresh") {
-                        statusElement.className = "text-title-md font-title-md font-bold text-primary"; // Hijau
+                    if(kondisinya.toLowerCase() === "rotten") {
+                        statusElement.className = "text-title-md font-title-md font-bold text-error"; 
+                    } else if(kondisinya.toLowerCase() === "fresh") {
+                        statusElement.className = "text-title-md font-title-md font-bold text-primary"; 
                     } else {
-                        statusElement.className = "text-title-md font-title-md font-bold text-secondary"; // Oranye/Kuning untuk Unripe
+                        statusElement.className = "text-title-md font-title-md font-bold text-secondary"; 
                     }
                 } else {
                     document.getElementById("detail-status").innerText = "Terdeteksi";
                     document.getElementById("detail-status").className = "text-title-md font-title-md font-bold text-primary";
                     document.getElementById("detail-type").innerText = highestClassName;
                 }
+
+                // SIAPKAN DATA UNTUK DISIMPAN KE DB (Global Variable)
+                currentScanData = {
+                    fruit_type: buahType,
+                    ripeness_status: kondisinya,
+                    confidence_score: percentVal
+                };
+
             } else {
                 document.getElementById("overlay-detected").innerText = "OBJEK TIDAK DIKENAL";
                 document.getElementById("detail-status").innerText = "Akurasi Rendah";
                 document.getElementById("detail-status").className = "text-title-md font-title-md font-bold text-error";
                 document.getElementById("detail-type").innerText = "-";
+                
+                currentScanData = null; // Batalkan opsi simpan karena prediksi jelek
+                document.getElementById("log-btn").className = "mt-auto w-full bg-surface-container-highest text-on-surface-variant font-title-md text-title-md py-4 px-4 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed";
             }
         }
     </script>
