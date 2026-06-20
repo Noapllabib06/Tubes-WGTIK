@@ -148,3 +148,8 @@ Route::get('/clear-cache', function() {
     Artisan::call('view:clear');
     return 'Cache server berhasil dibersihkan! Silakan kembali ke halaman utama.';
 });
+
+
+Route::get('/cek-device', function () {
+    return view('dashboard'); // Sesuaikan dengan nama view dashboard Anda
+});
