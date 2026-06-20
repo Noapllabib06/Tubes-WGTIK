@@ -114,3 +114,28 @@ Route::delete('/api/history/reset', function () {
     
     return response()->json(['message' => 'History berhasil direset']);
 });
+
+
+
+// API untuk menyimpan hasil deteksi dari halaman Scan ke Database
+Route::post('/api/history', function (Request $request) {
+    $validated = $request->validate([
+        'fruit_type' => 'required|string',
+        'ripeness_status' => 'required|string',
+        'confidence_score' => 'required|numeric',
+    ]);
+
+    DetectionHistory::create([
+        'fruit_type' => $validated['fruit_type'],
+        'ripeness_status' => $validated['ripeness_status'],
+        'confidence_score' => $validated['confidence_score']
+    ]);
+
+    return redirect()->route('history')->with('success', 'Data tersimpan sukses');
+})->name('history.store'); // <-- Tambahkan name ini
+
+// API untuk menghapus SATU data riwayat (Dibutuhkan oleh tombol hapus di mobile)
+Route::delete('/api/history/{id}', function ($id) {
+    DetectionHistory::destroy($id);
+    return back();
+})->name('history.destroy'); // <-- Tambahkan rute dan name ini
