@@ -14,24 +14,33 @@ class DetectDevice
     {
         $isMobile = false;
 
-        // 1. Deteksi Super Akurat: Cek header 'Sec-CH-UA-Mobile' (Standar Browser HP Modern)
-        // Header ini kebal terhadap proxy dan load balancer seperti milik Railway/Cloudflare
-        if ($request->header('Sec-CH-UA-Mobile') === '?1') {
+        // 1. FITUR OVERRIDE (Untuk memaksa ganti tampilan lewat URL / Testing)
+        if ($request->query('device') === 'mobile') {
             $isMobile = true;
+        } elseif ($request->query('device') === 'desktop') {
+            $isMobile = false;
         } 
-        // 2. Deteksi Fallback: Menggunakan library Agent membaca User-Agent
+        // 2. DETEKSI OTOMATIS (Membaca Proxy Railway)
         else {
-            $agent = new Agent();
-            // Gunakan $request->userAgent() bawaan Laravel yang lebih peka terhadap Proxy
-            $agent->setUserAgent($request->userAgent());
+            // Railway terkadang menaruh User-Agent asli di header X-Forwarded
+            $originalUserAgent = $request->header('X-Forwarded-User-Agent') ?: $request->userAgent();
             
-            if ($agent->isMobile() || $agent->isTablet()) {
+            if ($request->header('Sec-CH-UA-Mobile') === '?1') {
                 $isMobile = true;
+            } else {
+                $agent = new Agent();
+                $agent->setUserAgent($originalUserAgent);
+                
+                if ($agent->isMobile() || $agent->isTablet()) {
+                    $isMobile = true;
+                }
             }
         }
 
-        // 3. Arahkan Folder Tampilan
+        // 3. ARAHKAN FOLDER & RESET MEMORI PENCARIAN VIEW
         $viewFinder = View::getFinder();
+        $viewFinder->flush(); // PAKSA Laravel melupakan path view sebelumnya
+
         if ($isMobile) {
             $viewFinder->prependLocation(resource_path('views/mobile'));
         } else {
