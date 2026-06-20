@@ -18,14 +18,17 @@ class DetectDevice
     public function handle(Request $request, Closure $next): Response
     {
         $agent = new Agent();
+        
+        // --- PERBAIKAN UNTUK HOSTING / RAILWAY ---
+        // Memaksa Agent untuk membaca User-Agent dari header Laravel Request
+        $agent->setUserAgent($request->header('User-Agent'));
+
         $viewFinder = View::getFinder();
 
         // Cek apakah pengunjung menggunakan HP atau Tablet
         if ($agent->isMobile() || $agent->isTablet()) {
-            // Prioritaskan pencarian file view di folder 'mobile'
             $viewFinder->prependLocation(resource_path('views/mobile'));
         } else {
-            // Prioritaskan pencarian file view di folder 'desktop'
             $viewFinder->prependLocation(resource_path('views/desktop'));
         }
 

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\DetectionHistory;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -139,3 +140,11 @@ Route::delete('/api/history/{id}', function ($id) {
     DetectionHistory::destroy($id);
     return back();
 })->name('history.destroy'); // <-- Tambahkan rute dan name ini
+
+
+// Route khusus untuk membersihkan cache di hosting (Railway)
+Route::get('/clear-cache', function() {
+    Artisan::call('optimize:clear');
+    Artisan::call('view:clear');
+    return 'Cache server berhasil dibersihkan! Silakan kembali ke halaman utama.';
+});
