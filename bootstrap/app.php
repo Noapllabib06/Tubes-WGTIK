@@ -11,12 +11,18 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+
     ->withMiddleware(function (Middleware $middleware) {
-        // Mendaftarkan middleware agar berjalan di semua rute web
+        
+        // 1. Baris WAJIB untuk hosting seperti Railway/Cloudflare
+        $middleware->trustProxies(at: '*'); 
+
+        // 2. Middleware deteksi perangkat Anda
         $middleware->web(append: [
-            DetectDevice::class,
+            \App\Http\Middleware\DetectDevice::class,
         ]);
     })
+
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
