@@ -10,23 +10,29 @@ use Illuminate\Support\Facades\View;
 
 class DetectDevice
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        $agent = new Agent();
-        
-        // --- PERBAIKAN UNTUK HOSTING / RAILWAY ---
-        // Memaksa Agent untuk membaca User-Agent dari header Laravel Request
-        $agent->setUserAgent($request->header('User-Agent'));
+        $isMobile = false;
 
+        // 1. Deteksi Super Akurat: Cek header 'Sec-CH-UA-Mobile' (Standar Browser HP Modern)
+        // Header ini kebal terhadap proxy dan load balancer seperti milik Railway/Cloudflare
+        if ($request->header('Sec-CH-UA-Mobile') === '?1') {
+            $isMobile = true;
+        } 
+        // 2. Deteksi Fallback: Menggunakan library Agent membaca User-Agent
+        else {
+            $agent = new Agent();
+            // Gunakan $request->userAgent() bawaan Laravel yang lebih peka terhadap Proxy
+            $agent->setUserAgent($request->userAgent());
+            
+            if ($agent->isMobile() || $agent->isTablet()) {
+                $isMobile = true;
+            }
+        }
+
+        // 3. Arahkan Folder Tampilan
         $viewFinder = View::getFinder();
-
-        // Cek apakah pengunjung menggunakan HP atau Tablet
-        if ($agent->isMobile() || $agent->isTablet()) {
+        if ($isMobile) {
             $viewFinder->prependLocation(resource_path('views/mobile'));
         } else {
             $viewFinder->prependLocation(resource_path('views/desktop'));
