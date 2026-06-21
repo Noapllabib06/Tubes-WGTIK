@@ -86,10 +86,6 @@
                 <span class="text-xs font-bold uppercase tracking-widest">History</span>
             </a>
             
-            <a href="{{ route('setting') }}" class="flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 {{ request()->routeIs('setting') ? 'bg-primary-container text-on-primary-container' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-highest' }}">
-                <span class="material-symbols-outlined">settings</span>
-                <span class="text-xs font-bold uppercase tracking-widest">Settings</span>
-            </a>
         </nav>
         <div class="pt-stack-md border-t border-outline-variant mt-auto">
             <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-primary transition-all" href="#">
