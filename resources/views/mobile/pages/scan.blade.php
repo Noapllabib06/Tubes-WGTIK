@@ -131,15 +131,15 @@
                 // Ambil Track Video untuk mengecek fitur senter
                 activeVideoTrack = stream.getVideoTracks()[0];
                 
-                const capabilities = activeVideoTrack.getCapabilities ? activeVideoTrack.getCapabilities() : {};
-
-                if (capabilities.torch) {
+                // LOGIKA BARU: Tampilkan tombol senter secara paksa jika kamera belakang aktif
+                if (currentFacingMode === "environment") {
                     torchContainer.classList.remove("hidden");
-                    torchContainer.classList.add("flex"); // Tampilkan tombol senter
-                    torchToggle.checked = false; // Reset posisi slider ke Off
+                    torchContainer.classList.add("flex"); 
+                    torchToggle.checked = false; // Reset posisi slider
                 } else {
+                    // Sembunyikan jika sedang pakai kamera depan
                     torchContainer.classList.remove("flex");
-                    torchContainer.classList.add("hidden"); // Sembunyikan jika tidak mendukung
+                    torchContainer.classList.add("hidden"); 
                 }
 
                 modeText.innerText = "Kamera " + (currentFacingMode === "environment" ? "Belakang" : "Depan");
