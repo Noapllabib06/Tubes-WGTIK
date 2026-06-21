@@ -24,16 +24,13 @@
         </div>
 
         <div id="torch-container" class="absolute top-3 right-3 z-20 hidden items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full shadow-lg border border-white/20 transition-all">
-    
             <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.82 1.508-2.316a7.5 7.5 0 10-7.516 0c.85.496 1.508 1.333 1.508 2.316V18"></path>
             </svg>
-            
             <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" id="torch-toggle" class="sr-only peer">
                 <div class="w-9 h-5 bg-gray-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
             </label>
-
         </div>
 
         <div class="absolute bottom-3 right-3 flex gap-2 z-20">
@@ -79,7 +76,6 @@
     const URL = "{{ asset('my_model/') }}/";
     
     let activeVideoTrack = null; 
-
     let model, maxPredictions;
     let isWebcamActive = false;
     let currentFacingMode = "environment";
@@ -143,14 +139,13 @@
                 }
 
                 modeText.innerText = "Kamera " + (currentFacingMode === "environment" ? "Belakang" : "Depan");
-                modeDot.classList.add("animate-pulse", "bg-emerald-500");
-                modeDot.classList.remove("bg-blue-500", "animate-none");
+                modeDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
 
                 videoElement.addEventListener('loadeddata', predictLoop);
             } catch (err) {
                 console.error("Kamera tidak dapat diakses:", err);
                 modeText.innerText = "Kamera Error";
-                modeDot.classList.replace("bg-emerald-500", "bg-red-500");
+                modeDot.className = "w-2 h-2 rounded-full bg-red-500";
                 torchContainer.style.display = "none";
             }
         }
@@ -189,7 +184,7 @@
         `;
     }
 
-    // --- EVENT LISTENER SENTER (TORCH) ---
+    // --- EVENT LISTENER SENTER DENGAN PENANGANAN ERROR ELEGAN ---
     torchToggle.addEventListener('change', async (e) => {
         if (activeVideoTrack) {
             try {
@@ -199,8 +194,22 @@
                 });
             } catch (err) {
                 console.error('Gagal mengontrol senter:', err);
-                alert('Senter gagal diaktifkan. Pastikan Anda mengakses web menggunakan HTTPS.');
-                e.target.checked = !e.target.checked; // Kembalikan posisi slider jika gagal
+                
+                // Tampilkan Notifikasi Sementara di UI (Tanpa Alert)
+                const originalText = modeText.innerText;
+                const originalColor = modeDot.className;
+                
+                modeText.innerText = "Senter Tidak Didukung";
+                modeDot.className = "w-2 h-2 rounded-full bg-red-500 animate-pulse";
+                
+                // Kembalikan teks dan warna ke semula setelah 3 detik
+                setTimeout(() => {
+                    modeText.innerText = originalText;
+                    modeDot.className = originalColor;
+                }, 3000);
+
+                // Kembalikan posisi slider UI karena senter gagal nyala
+                e.target.checked = !e.target.checked; 
             }
         }
     });
@@ -224,14 +233,14 @@
                     videoElement.srcObject.getTracks().forEach(track => track.stop());
                 }
                 videoElement.style.display = "none";
-                torchContainer.style.display = "none"; // Sembunyikan tombol senter
+                torchContainer.classList.remove("flex");
+                torchContainer.classList.add("hidden"); // Sembunyikan tombol senter
                 
                 imagePreview.src = event.target.result;
                 imagePreview.style.display = "block";
                 
                 modeText.innerText = "Mode Gambar";
-                modeDot.classList.remove("animate-pulse", "bg-emerald-500");
-                modeDot.classList.add("bg-blue-500");
+                modeDot.className = "w-2 h-2 rounded-full bg-blue-500";
 
                 imagePreview.onload = async function() {
                     await predict(imagePreview);
