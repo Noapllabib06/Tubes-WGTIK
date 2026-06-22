@@ -13,7 +13,7 @@
             <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-lg">
                 F
             </div>
-            <span class="font-bold text-gray-900 tracking-tight">FruitApp</span>
+            <span class="font-bold text-gray-900 tracking-tight">Fruit Grader</span>
         </div>
         <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
